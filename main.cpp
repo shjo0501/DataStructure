@@ -1,5 +1,39 @@
 // #define RED_BLACK_TREE
 // #define BINARY_SEARH_TREE
+// #define DEQUE
+#if defined (DEQUE)
+#include "Deque.h"
+#include <iostream>
+using namespace std;
+int main()
+{
+    deque deq;
+    deq.push_front(1);
+    deq.print();
+
+    deq.push_front(2);
+    deq.print();
+
+    deq.push_front(3);
+    deq.print();
+
+    deq.pop_back();
+    deq.print();
+
+    cout << "front: " << deq.front().data << ", " << "end: " << deq.back().data << endl;
+
+    deq.pop_back();
+    deq.print();
+
+    deq.pop_back();
+    deq.print();
+
+    deq.pop_back();
+    deq.print();
+
+    return 0;
+}
+
 #if defined (BINARY_SEARH_TREE)
 #include "BinarySearchTree.h"
 #include <iostream>
