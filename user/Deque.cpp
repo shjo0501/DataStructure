@@ -1,3 +1,4 @@
+#if defined (DEQUE)
 #include "Deque.h"
 #include <iostream>
 using namespace std;
@@ -83,3 +84,4 @@ void deque::print()
     }
     printf("\n");
 }
+#endif

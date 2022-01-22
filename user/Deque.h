@@ -1,4 +1,5 @@
 #pragma once
+#if defined (DEQUE)
 struct ElementData
 {
     int data;
@@ -28,3 +29,4 @@ public:
     ElementData back();
     void print();
 };
+#endif

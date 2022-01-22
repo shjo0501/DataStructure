@@ -1,3 +1,4 @@
+#if defined (RED_BLACK_TREE)
 #include "user/RedBlackTree.h"
 #include <iostream>
 using namespace std;
@@ -517,3 +518,4 @@ void printLeftChild(Tree* pTree)
         pCur = pCur->pLeft;
     }
 }
+#endif

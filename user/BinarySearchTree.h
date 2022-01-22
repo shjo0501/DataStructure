@@ -1,4 +1,5 @@
 #pragma once
+#if defined (BINARY_SEARH_TREE)
 #include <iostream>
 using namespace std;
 
@@ -12,3 +13,4 @@ Tree* findMinNode(Tree* pParent, Tree* pTree);
 Tree* remove(Tree* pTree, Tree* pParent, int data);
 void destroy(Tree* pTree);
 void remove_node(Tree* pTree);
+#endif

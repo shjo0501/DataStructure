@@ -1,3 +1,4 @@
+#if defined (BINARY_SEARH_TREE)
 #include <iostream>
 using namespace std;
 
@@ -187,3 +188,4 @@ void remove_node(Tree* pTree)
     if (pTree)
         free(pTree);
 }
+#endif
