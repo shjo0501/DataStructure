@@ -1,9 +1,81 @@
+// #define RED_BLACK_TREE
+// #define BINARY_SEARH_TREE
+#if defined (BINARY_SEARH_TREE)
+#include "BinarySearchTree.h"
 #include <iostream>
 using namespace std;
 
-#define RED_BLACK_TREE
+struct Tree
+{
+    Tree* pLeft;
+    Tree* pRight;
+    int data;
+};
+
+extern Tree* root;
+
+int main()
+{
+    root = createBTNode(50);
+
+    Tree* pNode = createBTNode(40);
+    insert(root, createBTNode(60));
+    insert(root, createBTNode(25));
+    insert(root, createBTNode(30));
+    insert(root, createBTNode(55));
+    insert(root, createBTNode(70));
+    insert(root, createBTNode(12));
+    insert(root, createBTNode(27));
+
+    Tree* pTarget = nullptr;
+    pTarget = remove(root, nullptr, 60);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 50);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 55);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 70);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 40);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 25);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 27);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 12);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 30);
+    remove_node(pTarget);
+
+    if (root) {
+        preorder(root);
+        //inorder(root);
+        //postorder(root);
+    }
+    else {
+        printf("no data in tree\n");
+    }
+
+    if (root) {
+        destroy(root);
+    }
+
+    return 0;
+}
+#endif
 
 #if defined (RED_BLACK_TREE)
+#include <iostream>
+using namespace std;
+
 #include "user/RedBlackTree.h"
 enum { RED, BLACK };
 extern Tree* Nil;
@@ -18,11 +90,9 @@ struct Tree
     int data;
     int color;
 };
-#endif
 
 int main()
 {
-#if defined (RED_BLACK_TREE)
     Nil = createRBNode(0);
     Nil->color = BLACK;
 
@@ -84,6 +154,7 @@ int main()
         destroy(root);
 
     free(Nil);
-#endif
+
     return 0;
 }
+#endif
