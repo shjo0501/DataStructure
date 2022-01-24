@@ -1,3 +1,4 @@
+//#define DEQUE
 #if defined (DEQUE)
 #include "Deque.h"
 #include <iostream>

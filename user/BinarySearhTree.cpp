@@ -1,3 +1,4 @@
+//#define BINARY_SEARH_TREE
 #if defined (BINARY_SEARH_TREE)
 #include <iostream>
 using namespace std;

@@ -1,4 +1,6 @@
+//#define RED_BLACK_TREE
 #pragma once
+#if defined (RED_BLACK_TREE)
 #include "user/RedBlackTree.h"
 struct Tree* createRBNode(int data);
 void rotate_left(Tree* pRoot);
@@ -17,3 +19,4 @@ void remove_node(Tree* node);
 void destroy(Tree* pTree);
 void printParent(Tree* pTree);
 void printLeftChild(Tree* pTree);
+#endif

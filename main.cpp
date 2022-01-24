@@ -1,6 +1,79 @@
 // #define RED_BLACK_TREE
 // #define BINARY_SEARH_TREE
 // #define DEQUE
+// #define AVL_TREE
+#if defined (AVL_TREE)
+#include "AVLTree.h"
+#include <iostream>
+using namespace std;
+
+struct Tree
+{
+    Tree* pLeft;
+    Tree* pRight;
+    int height;
+    int key;
+};
+
+extern Tree* root;
+
+int main()
+{
+    root = createAVLNode(50);
+    root = insertAVL(root, createAVLNode(40));
+    root = insertAVL(root, createAVLNode(60));
+    root = insertAVL(root, createAVLNode(25));
+    root = insertAVL(root, createAVLNode(30));
+    root = insertAVL(root, createAVLNode(55));
+    root = insertAVL(root, createAVLNode(70));
+    root = insertAVL(root, createAVLNode(12));
+    root = insertAVL(root, createAVLNode(27));
+
+    Tree* pTarget = nullptr;
+    pTarget = remove(root, nullptr, 60);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 50);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 55);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 70);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 40);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 25);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 27);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 12);
+    remove_node(pTarget);
+
+    pTarget = remove(root, nullptr, 30);
+    remove_node(pTarget);
+
+    if (root) {
+        preorder(root);
+        //inorder(root);
+        //postorder(root);
+    }
+    else {
+        printf("no data in tree\n");
+    }
+
+    if (root) {
+        destroy(root);
+    }
+
+    return 0;
+}
+#endif
+
 #if defined (DEQUE)
 #include "Deque.h"
 #include <iostream>

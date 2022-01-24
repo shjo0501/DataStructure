@@ -1,3 +1,4 @@
+//#define RED_BLACK_TREE
 #if defined (RED_BLACK_TREE)
 #include "user/RedBlackTree.h"
 #include <iostream>

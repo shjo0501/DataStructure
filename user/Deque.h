@@ -1,3 +1,4 @@
+//#define DEQUE
 #pragma once
 #if defined (DEQUE)
 struct ElementData
