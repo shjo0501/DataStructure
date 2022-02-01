@@ -2,6 +2,34 @@
 // #define BINARY_SEARH_TREE
 // #define DEQUE
 // #define AVL_TREE
+// #define B_TREE
+#define B_TREE
+#if defined (B_TREE)
+#include "BTree.h"
+
+extern BTreeNode* root;
+
+int main()
+{
+    insert(8);
+    insert(9);
+    insert(10);
+    insert(11);
+    insert(15);
+    insert(20);
+    insert(17);
+    insert(14);
+    insert(12);
+    insert(13);
+    insert(15);
+    insert(19);
+
+    traverse(root);
+
+    return 0;
+}
+#endif
+
 #if defined (AVL_TREE)
 #include "AVLTree.h"
 #include <iostream>
