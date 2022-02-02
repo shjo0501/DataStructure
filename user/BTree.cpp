@@ -7,12 +7,11 @@ using namespace std;
 //https://www.cs.usfca.edu/~galles/visualization/BTree.html
 
 // BTree Property
-int t = 2;
+const int T = 4;
+const int MAX = 2 * T - 1;
 
 struct BTreeNode
 {
-#define MAX 32
-
     int keys[MAX];
     int n;
     bool leafNode;
@@ -38,17 +37,17 @@ void splitNode(int index, BTreeNode* pTree, BTreeNode* pParent)
 {
     // 새로운 노드는 pTree 노드와 같은 레벨에 위치하게 된다. pTree가 leaf라면 pNodeZ도 leaf가 되고, leaf가 아니라면 pNodeZ도 leaf 아니게 된다.
     BTreeNode* pNodeZ = createEmptyNode(pTree->leafNode);
-    pNodeZ->n = t - 1;
+    pNodeZ->n = T - 1;
     // 1) 새로운 노드(pNodeZ)가 부모가 되고, 오른쪽 key 값엔 median을 중심으로 오른쪽 값들을 저장시킨다. // 왼쪽엔 기존에 연결되어 있던 것을 사용한다.
-    for (int k = 0; k < t - 1; k++) {
-        pNodeZ->keys[k] = pTree->keys[k + t];
+    for (int k = 0; k < T - 1; k++) {
+        pNodeZ->keys[k] = pTree->keys[k + T];
     }
 
     // 2) 만일에 leafNode가 아니라면
     if (pTree->leafNode == false) {
         // 새로운 부모에 기존의 오른쪽 child만 연결 시킨다. // 왼쪽엔 기존에 연결되어 있던 것을 사용한다.
-        for (int k = 0; k < t; k++)
-            pNodeZ->pChild[k] = pTree->pChild[k + t];
+        for (int k = 0; k < T; k++)
+            pNodeZ->pChild[k] = pTree->pChild[k + T];
     }
 
     // [예시]
@@ -61,14 +60,14 @@ void splitNode(int index, BTreeNode* pTree, BTreeNode* pParent)
     pParent->pChild[index + 1] = pNodeZ;
 
     // 3) 분할된 노드의 수를 줄이기
-    pTree->n = t - 1;
+    pTree->n = T - 1;
 
     // [예시] key의 경우도 17을 한칸 땡겨야한다.
     for (int j = pParent->n - 1; j >= index; j--)
         pParent->keys[j + 1] = pParent->keys[j];
 
     // 4) 부모에 medianKey 올리기
-    pParent->keys[index] = pTree->keys[t - 1];
+    pParent->keys[index] = pTree->keys[T - 1];
     pParent->n++;
 }
 
@@ -96,7 +95,7 @@ void insertNode(BTreeNode* pTree, int childIdx, BTreeNode* pParent, int key)
 
     if (pTree->leafNode == false) {
         // 탐색하려는 인덱스를 찾는다.
-        while ((i >= 0) && key < pTree->keys[i]) 
+        while ((i >= 0) && key < pTree->keys[i])
             i--;
 
         // 탐색을 이어간다.
@@ -113,7 +112,7 @@ void insertNode(BTreeNode* pTree, int childIdx, BTreeNode* pParent, int key)
         pTree->n++;
     }
 
-    if (pTree->n == 2 * t - 1) {
+    if (pTree->n == 2 * T - 1) {
         if (pParent) {
             splitNode(childIdx, pTree, pParent);
         }
