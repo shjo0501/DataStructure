@@ -3,7 +3,6 @@
 // #define DEQUE
 // #define AVL_TREE
 // #define B_TREE
-#define B_TREE
 #if defined (B_TREE)
 #include "BTree.h"
 

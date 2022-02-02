@@ -36,7 +36,7 @@ BTreeNode* root = nullptr;
 
 void splitNode(int index, BTreeNode* pTree, BTreeNode* pParent)
 {
-    // leaf flag가 전달되는 방식 고민 필요
+    // 새로운 노드는 pTree 노드와 같은 레벨에 위치하게 된다. pTree가 leaf라면 pNodeZ도 leaf가 되고, leaf가 아니라면 pNodeZ도 leaf 아니게 된다.
     BTreeNode* pNodeZ = createEmptyNode(pTree->leafNode);
     pNodeZ->n = t - 1;
     // 1) 새로운 노드(pNodeZ)가 부모가 되고, 오른쪽 key 값엔 median을 중심으로 오른쪽 값들을 저장시킨다. // 왼쪽엔 기존에 연결되어 있던 것을 사용한다.
@@ -82,28 +82,15 @@ void insert(int key)
     }
     // 루트에 노드가 있다면
     else {
-        // 루트 노드에 여유 공간이 없을 경우
-        if (root->n == 2 * t - 1) {
-            BTreeNode* pNode = createEmptyNode(false);
-            pNode->pChild[0] = root;
-            splitNode(0, root, pNode);
+        int i = 0;
+        while (root->keys[i] < key)
+            i++;
 
-            // Median Key 값만 새로 올라왔으니, 새롭게 할당된 노드엔 키가 하나다.
-            int i = 0;
-            if (pNode->keys[0] < key)
-                i++;
-
-            // 새로운 root 노드를 기준으로 탐색을 진행한다.
-            insertNode(pNode->pChild[i], key);
-            root = pNode;
-        }
-        else {
-            insertNode(root, key);
-        }
+        insertNode(root, i, nullptr, key);
     }
 }
 
-void insertNode(BTreeNode* pTree, int key)
+void insertNode(BTreeNode* pTree, int childIdx, BTreeNode* pParent, int key)
 {
     int i = pTree->n - 1;
 
@@ -112,19 +99,8 @@ void insertNode(BTreeNode* pTree, int key)
         while ((i >= 0) && key < pTree->keys[i]) 
             i--;
 
-        // 탐색하는 노드마다 여유가 없다면 미리 분할한다.
-        // 1) 탐색하려는 노드의 자식이 여유가 없다면
-        if (pTree->pChild[i + 1]->n == 2 * t - 1) {
-            // 2) 탐색하려는 인덱스를 기준으로 분할한다.
-            splitNode(i + 1, pTree->pChild[i + 1], pTree);
-
-            // 3) 분할을 한 후, key 값이 탐색하려던 노드의 key 값 보다 더 적어진다면, 인덱스를 한칸 이동시킨다. (원래는 key가 제일 작아서 0번 이었느나, 새로들어온게 더 작아져 버리니 인덱스 갱신을 시켜야된다.
-            if (pTree->keys[i + 1] < key)
-                i++;
-        }
-
-        // 분할이 끝났으니, 탐색을 이어간다.
-        insertNode(pTree->pChild[i + 1], key);
+        // 탐색을 이어간다.
+        insertNode(pTree->pChild[i + 1], (i + 1), pTree, key);
     }
     else {
         // 원래 key 값과 비교하여 작다면 옆으로 이동시키고, (작은게 들어가니 큰 값은 옆으로 미뤄저야 된다. 
@@ -135,6 +111,19 @@ void insertNode(BTreeNode* pTree, int key)
         // 정렬 순서에서 알맞는 인덱스가 갱신되니 그대로 넣는다.
         pTree->keys[i + 1] = key;
         pTree->n++;
+    }
+
+    if (pTree->n == 2 * t - 1) {
+        if (pParent) {
+            splitNode(childIdx, pTree, pParent);
+        }
+        else {
+            BTreeNode* pNode = createEmptyNode(false);
+            pNode->pChild[0] = root;
+
+            splitNode(0, pTree, pNode);
+            root = pNode;
+        }
     }
 }
 
