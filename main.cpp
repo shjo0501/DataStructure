@@ -3,6 +3,40 @@
 // #define DEQUE
 // #define AVL_TREE
 // #define B_TREE
+// #define SKIP_LIST
+#if defined (SKIP_LIST)
+#include "skipList.h"
+
+extern SkipList skipList;
+
+int main()
+{
+    init();
+
+    insertNode(3);
+    insertNode(7);
+    insertNode(8);
+    insertNode(10);
+    insertNode(12);
+    insertNode(19);
+    insertNode(22);
+    insertNode(29);
+    insertNode(45);
+    insertNode(65);
+    insertNode(30);
+    insertNode(1);
+
+    destroyNode(deleteNode(3));
+    destroyNode(deleteNode(7));
+    destroyNode(deleteNode(8));
+
+    printAllNode();
+
+    deinit();
+
+    return 0;
+}
+#endif
 #if defined (B_TREE)
 #include "BTree.h"
 
