@@ -9,6 +9,7 @@ using namespace std;
 // BTree Property
 const int T = 4;
 const int MAX = 2 * T - 1;
+const int MIN = MAX / 2;
 
 struct BTreeNode
 {
@@ -81,9 +82,9 @@ void insert(int key)
     }
     // 루트에 노드가 있다면
     else {
-        int i = 0;
-        while (root->keys[i] < key)
-            i++;
+        int i = root->n - 1;
+        while ((i >= 0) && key < root->keys[i])
+            i--;
 
         insertNode(root, i, nullptr, key);
     }
@@ -126,18 +127,258 @@ void insertNode(BTreeNode* pTree, int childIdx, BTreeNode* pParent, int key)
     }
 }
 
+//**********************************************************************
+// shjo code
+void search(int key)
+{
+    BTreeNode* pSearch = nullptr;
+    pSearch = searchNode(root, key);
+
+    if (pSearch) {
+        printf("found %d\n", key);
+    }
+    else {
+        printf("not found\n");
+    }
+}
+
+BTreeNode* searchNode(BTreeNode* pTree, int key)
+{
+    int i = 0;
+    while (i < pTree->n && key > pTree->keys[i]) {
+        i++;
+    }
+
+    if (pTree->keys[i] == key) {
+        return pTree;
+    }
+
+    if (pTree->leafNode) {
+        return nullptr;
+    }
+
+    return searchNode(pTree->pChild[i], key);
+}
+
+void borrowFromPrev(BTreeNode* pNode, int idx)
+{
+    BTreeNode* pChild = pNode->pChild[idx];
+    BTreeNode* pSibling = pNode->pChild[idx - 1];
+
+    for (int k = pChild->n - 1; k >= 0; k--) {
+        pChild->keys[k + 1] = pChild->keys[k];
+    }
+
+    if (!pChild->leafNode) {
+        for (int k = pChild->n; k >= 0; k--) {
+            pChild->pChild[k + 1] = pChild->pChild[k];
+        }
+
+        pChild->pChild[0] = pSibling->pChild[pSibling->n];
+    }
+
+    pChild->keys[0] = pNode->keys[idx - 1];
+    pNode->keys[idx - 1] = pSibling->keys[pSibling->n - 1];
+
+    pChild->n++;
+    pSibling->n--;
+}
+
+void borrowFromNext(BTreeNode* pNode, int idx)
+{
+    BTreeNode* pChild = pNode->pChild[idx];
+    BTreeNode* pSibling = pNode->pChild[idx + 1];
+
+    pChild->keys[pChild->n] = pNode->keys[idx];
+
+    if (!pChild->leafNode) {
+        pChild->pChild[pChild->n + 1] = pSibling->pChild[0];
+    }
+
+    for (int k = 1; k < pSibling->n; k++) {
+        pSibling->keys[k - 1] = pSibling->keys[k];
+    }
+
+    if (!pSibling->leafNode) {
+        for (int k = 1; k <= pSibling->n; k++) {
+            pSibling->pChild[k - 1] = pSibling->pChild[k];
+        }
+    }
+
+    pNode->keys[idx] = pSibling->keys[0];
+
+    pChild->n++;
+    pSibling->n--;
+}
+
+int findKey(BTreeNode* pNode, int key)
+{
+    int idx = 0;
+    while (idx < pNode->n && pNode->keys[idx] < key)
+        idx++;
+
+    return idx;
+}
+
+void merge(BTreeNode* pNode, int idx)
+{
+    BTreeNode* pChild = pNode->pChild[idx];
+    BTreeNode* pSibling = pNode->pChild[idx + 1];
+
+    pChild->keys[T - 1] = pNode->keys[idx];
+    for (int k = 0; k < pSibling->n; k++) {
+        pChild->keys[k + T] = pSibling->keys[k];
+    }
+
+    if (!pChild->leafNode) {
+        for (int k = 0; k < pSibling->n + 1; k++) {
+            pChild->pChild[k + T] = pSibling->pChild[k];
+        }
+    }
+
+    for (int k = idx + 1; k < pNode->n; k++) {
+        pNode->keys[k - 1] = pNode->keys[k];
+    }
+
+    for (int k = idx + 2; k < pNode->n + 1; k++) {
+        pNode->pChild[k - 1] = pNode->pChild[k];
+    }
+
+    pChild->n += pSibling->n + 1;
+    pNode->n--;
+
+    free(pSibling);
+}
+
+void fill(BTreeNode* pNode, int idx)
+{
+    if (idx != 0) {
+        if (pNode->n >= T) {
+            borrowFromPrev(pNode, idx);
+        }
+    }
+    else if (idx != pNode->n) {
+        if (pNode->n >= T) {
+            borrowFromNext(pNode, idx);
+        }
+    }
+    else {
+        if (idx != pNode->n) {
+            merge(pNode, idx);
+        }
+        else {
+            merge(pNode, idx - 1);
+        }
+    }
+}
+
+void removeLeafNode(BTreeNode* pNode, int idx)
+{
+    for (int k = idx + 1; k < pNode->n; k++) {
+        pNode->keys[k - 1] = pNode->keys[k];
+    }
+
+    pNode->n--;
+}
+
+int getSuccesor(BTreeNode* pNode)
+{
+    BTreeNode* pCur = pNode;
+    while (!pCur->leafNode) {
+        pCur = pCur->pChild[0];
+    }
+
+    return pCur->keys[0];
+}
+
+int getPredecessor(BTreeNode* pNode)
+{
+    BTreeNode* pCur = pNode;
+    while (!pCur->leafNode) {
+        pCur = pCur->pChild[pCur->n];
+    }
+
+    return pCur->keys[pCur->n - 1];
+}
+
+void removeNonLeafNode(BTreeNode* pNode, int idx);
+void removeNode(BTreeNode* pNode, int key)
+{
+    int idx = findKey(pNode, key);
+
+    if (idx < pNode->n && key == pNode->keys[idx]) {
+        if (pNode->leafNode) {
+            removeLeafNode(pNode, idx);
+        }
+        else {
+            removeNonLeafNode(pNode, idx);
+        }
+    }
+    else {
+        removeNode(pNode->pChild[idx], key);
+
+        if (pNode->n < T) {
+            fill(pNode, idx);
+        }
+    }
+}
+
+void removeNonLeafNode(BTreeNode* pNode, int idx)
+{
+    int key = pNode->keys[idx];
+    if (pNode->pChild[idx]->n >= T) {
+        // 1) get predecessor
+        int pred = getPredecessor(pNode->pChild[idx]);
+        pNode->keys[idx] = pred;
+        removeNode(pNode->pChild[idx], pred);
+    }
+    else if (pNode->pChild[idx + 1]->n >= T) {
+        // 2) get succesor
+        int succ = getSuccesor(pNode->pChild[idx + 1]);
+        pNode->keys[idx] = succ;
+        removeNode(pNode->pChild[idx + 1], succ);
+    }
+    else {
+        merge(pNode, idx);
+        removeNode(pNode->pChild[idx], key);
+    }
+}
+
+void remove(int key)
+{
+    if (!root) {
+        printf("The B Tree is empty\n");
+        return;
+    }
+
+    removeNode(root, key);
+    if (root->n == 0) {
+        BTreeNode* pTemp = root;
+        if (root->leafNode) {
+            root = nullptr;
+        }
+        else {
+            root = root->pChild[0];
+        }
+
+        free(pTemp);
+    }
+}
+
 void traverse(BTreeNode* pNode)
 {
-    int k = 0;
-    for (k = 0; k < pNode->n; k++) {
+    if (pNode) {
+        int k = 0;
+        for (k = 0; k < pNode->n; k++) {
+            if (pNode->leafNode == false) {
+                traverse(pNode->pChild[k]);
+            }
+            printf("%d ", pNode->keys[k]);
+        }
+
         if (pNode->leafNode == false) {
             traverse(pNode->pChild[k]);
         }
-        printf("%d ", pNode->keys[k]);
-    }
-
-    if (pNode->leafNode == false) {
-        traverse(pNode->pChild[k]);
     }
 }
 #endif

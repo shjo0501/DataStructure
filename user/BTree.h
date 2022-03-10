@@ -7,6 +7,7 @@ void splitNode(int index, BTreeNode* pNode, BTreeNode* pParent);
 void insertNode(BTreeNode* pNode, int childIdx, BTreeNode* pParent, int key);
 void insert(int key);
 void traverse(BTreeNode* pNode);
-void remove(BTreeNode* pNode);
-void search(BTreeNode* pNode);
+void search(int key);
+BTreeNode* searchNode(BTreeNode* pTree, int key);
+void remove(int key);
 #endif
